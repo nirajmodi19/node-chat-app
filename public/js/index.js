@@ -10,11 +10,6 @@ socket.on('connect', function () {
 		text: 'heya'
 	});*/
 
-	socket.emit('createMessage', {
-		from: 'xyz@mail.com',
-		text: 'heya'
-	});
-
 });
 
 socket.on('newMessage', function (message) {
