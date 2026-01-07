@@ -1,53 +1,53 @@
-{
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "string"
-      },
-      "eventType": {
-        "type": "string"
-      },
-      "subject": {
-        "type": "string"
-      },
-      "eventTime": {
-        "type": "string"
-      },
-      "data": {
-        "type": "object",
-        "properties": {
-          "api": {
-            "type": "string"
-          },
-          "clientRequestId": {
-            "type": "string"
-          },
-          "requestId": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string"
-          },
-          "contentType": {
-            "type": "string"
-          },
-          "contentLength": {
-            "type": "integer"
-          }
-        },
-        "required": [
-          "url"
-        ]
-      }
-    },
-    "required": [
-      "id",
-      "eventType",
-      "subject",
-      "eventTime",
-      "data"
-    ]
-  }
+import requests
+import urllib3
+
+# Optional: suppress insecure warnings if you previously used verify=False
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Your XML payload
+xml_payload = """<?xml version="1.0" encoding="UTF-8"?>
+<Request>
+    <Username>testuser</Username>
+    <Password>testpass</Password>
+    <Action>GetStatus</Action>
+</Request>
+"""
+
+# API endpoint
+url = "https://api.example.com/endpoint"
+
+# Proxy configuration (if required)
+proxies = {
+    "http": "http://proxy.company.com:8080",
+    "https": "http://proxy.company.com:8080"
 }
+
+# Create a session
+session = requests.Session()
+session.headers.update({
+    "Content-Type": "application/xml",
+    "Accept": "application/xml",
+})
+session.proxies.update(proxies)
+
+# Use combined CA bundle
+session.verify = "cert/ca_bundle.pem"
+
+# Optional timeout
+timeout = (10, 60)
+
+# Send request
+try:
+    response = session.post(
+        url,
+        data=xml_payload.encode("utf-8"),
+        timeout=timeout
+    )
+    print("Status Code:", response.status_code)
+    print("Response Body:", response.text)
+
+except requests.exceptions.RequestException as e:
+    print("Request failed:", e)
+
+finally:
+    session.close()
